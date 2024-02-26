@@ -17,11 +17,11 @@
        </section>
        <div class="login-container">
 
-           <form action="https://httpbin.org/post" method="POST" class="form login">
+           <form class="form login" id="regForm">
 
                <div class="form__field">
-                   <label for="reg_name" class="content-login">Hospital Name:</label>
-                   <input id="reg__name" type="text" name="hospitalname" class="form__input" placeholder="Enter Hospital Name" required>
+                   <label for="reg_email" class="content-login">Email:</label>
+                   <input id="reg_email" type="text" name="hospitalname" class="form__input" placeholder="Enter Email" required>
                </div>
 
                <div class="form__field">
@@ -35,8 +35,8 @@
                </div>
 
                <div class="form__field">
-                 <label for="reg__confirm" class="content-login">Confirm Password:</label>
-                 <input id="reg__confirm" type="password" name="password" class="form__input" placeholder="Re Enter Password" required>
+                 <label for="reg_confirm" class="content-login">Confirm Password:</label>
+                 <input id="reg_confirm" type="password" name="password" class="form__input" placeholder="Re Enter Password" required>
                </div>
 
               <div class="form__field">
@@ -53,5 +53,10 @@
 
    </div>
 
+
 </body>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/7.14.1-0/firebase.js"></script>
+<script src="../static/javaScript/firebasedb.js"></script>
+
 </html>

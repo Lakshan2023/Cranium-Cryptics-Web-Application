@@ -1,7 +1,8 @@
 
-}python:S1542"YRename function "BrainStrokeDetector" to match the regular expression ^[a-z_][a-z0-9_]*$.(ÈÃÛõøÿÿÿÿ8úºÑ‰Ú1
-npython:S1542"ORename function "Dashboard" to match the regular expression ^[a-z_][a-z0-9_]*$.(Ïú÷Ã8úºÑ‰Ú1
-}python:S1542$"YRename function "BrainTumourDetector" to match the regular expression ^[a-z_][a-z0-9_]*$.(í‰¦Õÿÿÿÿÿ8úºÑ‰Ú1
-‚python:S1542)"^Rename function "AlzheimerDiseaseDetector" to match the regular expression ^[a-z_][a-z0-9_]*$.(‘ì€Åıÿÿÿÿ8úºÑ‰Ú1
-ypython:S1542."URename function "ReportGenerator" to match the regular expression ^[a-z_][a-z0-9_]*$.(à÷ª†üÿÿÿÿ8úºÑ‰Ú1
-rpython:S15423"NRename function "Register" to match the regular expression ^[a-z_][a-z0-9_]*$.(¨²óÿÿÿÿÿ8úºÑ‰Ú1
+}python:S1542,"YRename function "BrainStrokeDetector" to match the regular expression ^[a-z_][a-z0-9_]*$.(ÈÃÛõøÿÿÿÿ8·…éŠÜ1
+npython:S15421"ORename function "Dashboard" to match the regular expression ^[a-z_][a-z0-9_]*$.(Ïú÷Ã8¸…éŠÜ1
+}python:S15426"YRename function "BrainTumourDetector" to match the regular expression ^[a-z_][a-z0-9_]*$.(í‰¦Õÿÿÿÿÿ8¸…éŠÜ1
+‚python:S1542;"^Rename function "AlzheimerDiseaseDetector" to match the regular expression ^[a-z_][a-z0-9_]*$.(‘ì€Åıÿÿÿÿ8¸…éŠÜ1
+ypython:S1542@"URename function "ReportGenerator" to match the regular expression ^[a-z_][a-z0-9_]*$.(à÷ª†üÿÿÿÿ8¸…éŠÜ1
+rpython:S1542E"NRename function "Register" to match the regular expression ^[a-z_][a-z0-9_]*$.(¨²óÿÿÿÿÿ8¸…éŠÜ1
+Upython:S1481]"6Remove the unused local variable "label_mapping_side".(ì™Û÷8¸…éŠÜ1

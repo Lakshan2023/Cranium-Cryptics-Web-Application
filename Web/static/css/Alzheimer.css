@@ -10,15 +10,7 @@
     --fourthColor: #2C3333;
 }
 
-.disease-status{
-    height: 45vh;
-    margin-bottom: 10vh;
+.stat1{
+    font-size: 23px;
 }
 
-.tumor-details{
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    margin-top: 5vh;
-    font-size: 19px;
-}

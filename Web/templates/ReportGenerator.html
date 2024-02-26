@@ -64,8 +64,18 @@
                             <h2 class="image-upload-heading">Upload the MRI image here</h2>
                             <label for="fileInput">
                             <div class="image-holding-section" id="imagePreview">
-                                <div class="magnifying-glass" id="magnifying-glass"></div>
-                                <span>Select an image</span>
+                                <div class="preview-container">
+                                    {% if image_path %}
+                                         <img src="{{ image_path }}" alt="Preview" class="holder"/>
+                                    {% else %}
+                                          <img src="" alt="Preview" class="holder" style="display:none"/>
+                                    {% endif %}
+                                    <div class="magnifying-glass-effect"></div>
+                                    <div class="scan-bar"></div>
+                                </div>
+                                     {% if not image_path %}
+                                        <span class="span-image">Select an image</span>
+                                     {% endif %}
                             </div>
                             </label>
                             <input type="file" id="fileInput" class="upload-button" accept="image/*" onchange="previewImage()" required>
@@ -144,14 +154,18 @@
         </div>
     </div>
 
-    <div>
-
+    <div class="scan-box">
+        <div class="scanning-animation" id="scanningAnimation">
+               <img src="../static/images/logo1.png" class="logo-img" alt="img-logo">
+               <p>Scanning...</p>
+        </div>
     </div>
 
     <script src="../static/javaScript/MainPage.js">
         workSpaceGenerator();
     </script>
 
-    <script src="../static/javaScript/BrainTumorDitector.js"></script>
+    <script src="../static/javaScript/BrainTumorDitector.js">
+    </script>
 </body>
 </html>

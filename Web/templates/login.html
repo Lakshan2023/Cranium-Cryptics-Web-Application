@@ -18,7 +18,7 @@
 
       <div class="login-container">
 
-        <form action="https://httpbin.org/post" method="POST" class="form login">
+        <form class="form login" id="loginForm">
 
             <div class="form__field">
               <label for="login__username" class="content-login">Username:</label>
@@ -49,6 +49,16 @@
 
   </div>
 
-
 </body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/7.14.1-0/firebase.js"></script>
+<script src="../static/javaScript/loginfirebasedb.js">
+</script>
+<script>
+    window.addEventListener('load', function() {
+        // Disable touchmove event to prevent swipe navigation
+        window.addEventListener('touchmove', function(e) {
+            e.preventDefault();
+        }, { passive: false });
+    });
+</script>
 </html>

@@ -33,6 +33,7 @@ function toggleMenu() {
         menuBurger.classList.remove('rotate');
         leftPane.style.Color = "#000";
     }
+
 }
 
 

@@ -155,8 +155,8 @@
 }
 
 .image-holding-section img {
-    width: 100%;
-    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
     object-fit: cover;
     transition: transform 0.3s ease-in-out;
 }
@@ -164,10 +164,6 @@
 .image-holding-section:hover {
     box-shadow: 0 0 15px rgba(100, 100, 100, 0.60);
     transform: scale(1.015);
-}
-
-.image-holding-section:hover img {
-    transform: scale(1.08);
 }
 
 .result-section{
@@ -272,7 +268,181 @@
     box-shadow: 0 0 15px rgba(100, 100, 100, 0.60);
 }
 
-@media screen and(max-width: 1300px){
+
+.image-preview-container {
+    position: relative;
+    display: inline-block;
+}
+
+.holder {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    cursor: none;
+}
+
+.magnifying-glass-effect {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 2px solid black;
+    cursor: none;
+    background-repeat: no-repeat;
+    background-size: 450% 450%; /* Adjust this value according to your preference */
+    display: none;
+}
+
+.stat{
+    font-size: 24px;
+}
+
+
+@keyframes blink {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.scan-box {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: black;
+    opacity: 0.63;
+    color: white;
+    z-index: 20000;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    display: none;
+}
+
+.scanning-animation {
+    color: white;
+    font-family: var(--fontPoppins);
+    font-size: 8vh;
+    display: flex;
+    animation: blink 2.0s infinite; /* Adjust duration as needed */
+}
+
+.logo-img {
+    display: flex;
+    height: 9vh;
+    width: 9vh;
+    opacity: 1.0;
+}
+
+
+
+@media (max-width: 1200px) {
+
+    .dashboard-panes{
+        height: max-content;
+    }
+
+    .display-section{
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        padding-bottom: 8%;
+        padding-top: 5%;
+        box-shadow: 2px 1px 2px rgba(100, 100, 100, 0.60);
+    }
+
+    .result-section{
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        width: 100%;
+        box-shadow: none;
+        padding-bottom: 5%;
+        padding-top: 5%;
+    }
+
+    .dashboard-main-section{
+        display: flex;
+        flex-direction: column;
+        height: max-content;
+    }
+
+    .image-holding-section{
+        width: 55vw;
+        height: 45vh;
+    }
+
+    .dashboard-copyright{
+        margin-bottom: 10vh;
+    }
+
+    .tumour-status-heading{
+        height: 10vh;
+    }
+
+    .tumor-type-heading{
+        height: 10vh;
+    }
+
+    .tumor-details{
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        align-items: center;
+    }
+
+    .profile-header{
+        display: flex;
+        flex-direction: row;
+        justify-content: right;
+        width: 50%;
+    }
+
+    .profile-image{
+        margin-right: 15px;
+    }
+
+    .upload-button{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 4vh;
+        width: 55%;
+    }
+
+    .disease-status{
+        margin-bottom: 5%;
+    }
+
+    .image-upload-heading{
+        font-size: 30px;
+    }
+
+    .stat{
+        font-size: 30px;
+    }
+
+    #file-upload-button{
+        align-self: center;
+    }
 
 }
 
+
+@media (max-width:1000px){
+    .profile-header{
+        display:none;
+    }
+
+    .dashboard-heading{
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+}

@@ -64,14 +64,24 @@
                           enctype="multipart/form-data">
                         <h2 class="image-upload-heading">Upload the MRI image here</h2>
                         <label for="fileInput">
-                            <div class="image-holding-section" id="imagePreview">
-                                <div class="magnifying-glass" id="magnifying-glass"></div>
-                                <span>Select an image</span>
-                            </div>
+                                <div class="image-holding-section" id="imagePreview">
+                                <div class="preview-container">
+                                    {% if image_path %}
+                                        <img src="{{ image_path }}" alt="Preview" class="holder">
+                                    {% else %}
+                                         <img src="" alt="Preview" class="holder" style="display: none">
+                                    {% endif %}
+                                          <div class="magnifying-glass-effect" id="magnifying-glass"></div>
+                                          <div class="scan-bar"></div>
+                                </div>
+                                    {% if not image_path %}
+                                          <span class="span-image">Select an image</span>
+                                    {% endif %}
+                                </div>
                         </label>
                         <input type="file" id="fileInput" class="upload-button" accept="image/*" onchange="previewImage()"
                         required
-                        name="imagefile">
+                        name="imagefile" onclick="displayUpdateStrokeStatus()">
                         <button class="scan-button" >Scan Image</button>
                     </form>
 
@@ -79,8 +89,33 @@
                         <section class="disease-status">
                             <h2 class="tumour-status-heading">Stroke Detection Status</h2>
                             <div class="tumor-details">
-                                <h3>Status : Not Detected</h3>
-                                <h3>Probability : 0.00</h3>
+                                {% if class_name %}
+                                     <h3 class="stroke-status stat">Status : {{ class_name[0] }}</h3>
+                                {% else %}
+                                     <h3 class="stroke-status stat">Status : Not Scanned</h3>
+                                {% endif %}
+
+                                {% if prediction_score %}
+                                     <h3 class="stroke-probability stat">Probability : {{ prediction_score[0] }}</h3>
+                                {% else %}
+                                     <h3 class="stroke-probability stat">Probability : 0.00</h3>
+                                {% endif %}
+                            </div>
+                        </section>
+
+                        <section class="detected-disease">
+                            <h2  class="tumor-type-heading">Detected Image Edge</h2>
+                            <div class="tumor-details">
+                                {% if class_name %}
+                                    <h3 class="type-status stat">Type : {{ class_name[1] }}</h3>
+                                {% else %}
+                                      <h3 class="type-status stat">Type : Not Scanned</h3>
+                                {% endif %}
+                                {% if prediction_score %}
+                                    <h3  class="probability-status-type stat">Probability : {{ prediction_score[1] }}</h3>
+                                {% else %}
+                                    <h3  class="probability-status-type stat">Probability : 0.00</h3>
+                                {% endif %}
                             </div>
                         </section>
                     </div>
@@ -113,8 +148,11 @@
         </div>
     </div>
 
-    <div>
-        
+    <div class="scan-box">
+        <div class="scanning-animation" id="scanningAnimation">
+               <img src="../static/images/logo1.png" class="logo-img" alt="img-logo">
+               <p>Scanning...</p>
+        </div>
     </div>
 
     <script src="../static/javaScript/MainPage.js">

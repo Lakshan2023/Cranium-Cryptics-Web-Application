@@ -37,3 +37,5 @@ F
 templates/profile.html,7\f\7f1863afc75308f4b2ba18256c163b6f3c56c5d1
 N
 static/css/reportgenerator.css,d\b\db7a7f244d25fe348b321152ee19742c4643cf8f
+Y
+)static/images/3D T2 brain MRI imaging.mp4,b\0\b081c8ea0a4e36d6c2893cbe3fb3b56d9c65af69
