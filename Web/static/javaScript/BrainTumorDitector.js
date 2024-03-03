@@ -152,6 +152,19 @@ function displayUpdateStrokeStatus(){
      stroke_probability_status.innerHTML = "Probability : 0.00";
 }
 
+
+const reportTumour = document.querySelector('.report-tumour');
+const reportTumourType = document.querySelector('.report-tumour-type');
+const reportStroke = document.querySelector('.report-stroke');
+const reportAlzheimer = document.querySelector('.report-alzheimer');
+
+function displayUpdateReportStatus(){
+    reportTumour.innerHTML = "<h2>Not Scanned</h2>";
+    reportTumourType.innerHTML = "<h2>Not Scanned</h2>";
+    reportStroke.innerHTML = "<h2>Not Scanned</h2>";
+    reportAlzheimer.innerHTML = "<h2>Not Scanned</h2>";
+
+}
 function clickScan(event, image_path) {
     event.preventDefault();
     alert(image_path);

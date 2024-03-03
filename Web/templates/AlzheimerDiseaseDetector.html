@@ -31,7 +31,7 @@
                         <a href="/ReportGenerator"><image src="../static/images/dashboard.png" class="menu-img">Report Generator</image></a></li>
                     </ul>
                     <section class="logout-section">
-                        <a href="#" class="logout-account">
+                        <a href="/account" class="logout-account">
                             <image src="../static/images/account.png" class="menu-img logout-img" id="account-dt"></image>
                             <p>Account</p>
                         </a>
@@ -54,7 +54,7 @@
                 </section>
                 <section class="profile-header" onmouseover="ProfilePopView()" onmouseout="removeProfileView()">
                     <image src="../static/images/profile.jpeg" class="profile-image"></image>
-                    <h2>Lakshan Cooray</h2>
+                    <h2 class="user-name">Lakshan Cooray</h2>
                 </section>
             </div>
             <div class="dashboard-panes">
@@ -79,8 +79,8 @@
                                 {% endif %}
                             </div>
                         </label>
-                        <input type="file" id="fileInput" class="upload-button" accept="image/*" onchange="previewImage()"
-                        name="imagefile" onclick="displayUpdateAlzheimerStatus()">
+                        <input type="file" id="fileInput" class="upload-button" accept="image/*" onchange="previewImage();
+                                displayUpdateAlzheimerStatus();"  name="imagefile" required>
                         <button class="scan-button" >Scan Image</button>
                     </form>
 
@@ -96,7 +96,7 @@
 
 
                                 {% if score %}
-                                    <h3 class="alzheimer-probability stat1">Probability : {{ score }}</h3>
+                                    <h3 class="alzheimer-probability stat1">Probability : {{ score[0] }}</h3>
                                 {% else %}
                                     <h3 class="alzheimer-probability stat1">Probability : 0.00</h3>
                                 {% endif %}
@@ -105,15 +105,15 @@
                         <section class="detected-disease">
                            <h2  class="tumor-type-heading">Detected Image Edge</h2>
                             <div class="tumor-details">
-                                {% if class_name %}
-                                    <h3 class="type-status stat">Type : {{ predicted_class[0] }}</h3>
+                                {% if predicted_class %}
+                                    <h3 class="type-status stat1">Type : {{ predicted_class[1] }}</h3>
                                 {% else %}
-                                      <h3 class="type-status stat">Type : Not Scanned</h3>
+                                      <h3 class="type-status stat1">Type : Not Scanned</h3>
                                 {% endif %}
-                                {% if prediction_score %}
-                                    <h3  class="probability-status-type stat">Probability : {{ predicted_class[1] }}</h3>
+                                {% if score %}
+                                    <h3  class="probability-status-type stat1">Probability : {{ score[1] }}</h3>
                                 {% else %}
-                                    <h3  class="probability-status-type stat">Probability : 0.00</h3>
+                                    <h3  class="probability-status-type stat1">Probability : 0.00</h3>
                                 {% endif %}
                             </div>
                         </section>
@@ -128,7 +128,7 @@
                     <div>
                         <ul class="profile-viewer-list">
                             <li class="profile-viewer-list-element profile-list1">
-                                <a href="#" class="pop-link">
+                                <a href="/account" class="pop-link">
                                     <img src="../static/images/profile2.png" class="menu-img profile-img" alt="View Profile">View Profile
                                 </a>
                             </li>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/css/MainPage.css">
+    <link rel="stylesheet" href="../static/css/profile.css">
+    <link rel="icon" type="image/x-icon" href="../static/images/logo1.png" sizes="64x64 32x32">
+    <title>Cranium Cryptics</title>
+</head>
+<body>
+    <div  class="app-container">
+        <div class="left-pane">
+            <div class="menu-button" onclick="toggleMenu()">
+                <h1 class="main-menu">Menu</h1>
+                <span class="menu-burger">&#9776;</span>
+            </div>
+            <div class="menu-container">
+                <div class="Menu-main-list">
+                    <ul class="menu-list">
+                        <li  class="menu-detail-list" onmouseout="nav_back_highliter()" onmouseover="nav_highliter();">
+                        <a href="/Dashboard"><image src="../static/images/dashboard.png" class="menu-img">Dashboard</image></a></li>
+                        <li  class="menu-detail-list" onmouseout="nav_back_highliter()" onmouseover="nav_highliter();">
+                        <a href="/BrainTumourDetector"><image src="../static/images/dashboard.png" class="menu-img">Tumor Detection</image></a></li>
+                        <li  class="menu-detail-list" onmouseout="nav_back_highliter()" onmouseover="nav_highliter();">
+                        <a href="/BrainStrokeDetector"><image src="../static/images/dashboard.png" class="menu-img" >Stroke Detection</image></a></li>
+                        <li  class="menu-detail-list" onmouseout="nav_back_highliter()" onmouseover="nav_highliter();">
+                        <a href="/AlzheimerDiseaseDetector"><image src="../static/images/dashboard.png" class="menu-img">Alzheimer Detection</image></a></li>
+                        <li  class="menu-detail-list" onmouseout="nav_back_highliter()" onmouseover="nav_highliter();">
+                        <a href="/ReportGenerator"><image src="../static/images/dashboard.png" class="menu-img">Report Generator</image></a></li>
+                    </ul>
+                    <section class="logout-section">
+                        <a href="/account" class="logout-account current_page hello login-button">
+                            <image src="../static/images/account.png" class="menu-img logout-img" id="account-dt"></image>
+                            <p>Account</p>
+                        </a>
+
+                        <a href="/login" class="logout-account-section">
+                            <image src="../static/images/logout.png" class="menu-img logout-img"></image>
+                            <p>Logout</p>
+                        </a>
+                    </section>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="right-pane">
+            <div class="dashboard-header">
+                <section class="dashboard-heading">
+                    <h2><span class="heading-span">Cranium</span> Cryptics</h2>
+                    <img src="../static/images/logo1.png" height="20px" width="20px">
+                </section>
+                <section class="profile-header" onmouseover="ProfilePopView()" onmouseout="removeProfileView()">
+                    <image src="../static/images/profile.jpeg" class="profile-image"></image>
+                    <h2 class="user-name">Lakshan Cooray</h2>
+                </section>
+            </div>
+
+            <div class="dashboard-panes">
+
+                <h1 class="heading-edit-profile">Edit Profile</h1>
+                <div class="form-work">
+                      <div class="col-md-3">
+                         <h3 class="personal-info-header">Profile Image</h3>
+                         <div class="text-center">
+                            <img id="previewImage" src="../static/images/profile.jpeg" class="avatar img-circle" alt="avatar">
+                            <input type="file" class="form-control fc1" id="uploadInput">
+                         </div>
+                      </div>
+
+                      <div class="col-md-9 personal-info">
+
+                            <h3 class="personal-info-header">Personal information</h3>
+
+                            <form class="form-horizontal" role="form">
+                                <div class="form-group">
+                                    <label class="col control-label">Username:</label>
+                                    <input class="form-control user-control control-bar" type="text">
+                                  </div>
+
+                                  <div class="form-group">
+                                    <label class="col-lg-3 control-label">Email:</label>
+                                    <input class="form-control email-control control-bar" type="text">
+                                  </div>
+
+                                  <div class="form-group">
+                                    <label class="col control-label">Password:</label>
+                                    <input class="form-control password-control control-bar" type="password">
+                                  </div>
+
+                                  <div class="form-group">
+                                     <label class="col control-label">Confirm password:</label>
+                                     <input class="form-control confirm-password-control control-bar" type="password">
+                                  </div>
+
+                                  <div class="form-group">
+                                    <label class="col control-label"></label>
+                                    <div class="col-md-8">
+                                      <input type="button" class="btn btn-primary" value="Save Changes">
+                                      <span></span>
+                                      <input type="button" class="btn btn-default" value="Reset" onclick="clearFileInput()">
+                                    </div>
+                                  </div>
+
+                            </form>
+                      </div>
+                </div>
+            </div>
+
+                <section class="dashboard-copyright">
+                    <p class="copy-text">Developed by Cranium Cryptics Team &copy; 2024. All rights reserved.</p>
+                </section>
+
+                <section class="profile-popup" onmouseover="ProfilePopView()" onmouseout="removeProfileView()">
+                    <div>
+                       <ul class="profile-viewer-list">
+                            <li class="profile-viewer-list-element profile-list1">
+                                <a href="#" class="pop-link">
+                                    <img src="../static/images/profile2.png" class="menu-img profile-img" alt="View Profile">View Profile
+                                </a>
+                            </li>
+                            <li class="profile-viewer-list-element" id="line-profile"></li>
+                            <li class="profile-viewer-list-element profile-list2" >
+                                <a href="/login" class="pop-link">
+                                    <img src="../static/images/signout-removebg-preview.png" class="menu-img profile-img2" alt="Sign Out">Sign Out
+                                </a>
+                            </li>
+                       </ul>
+                    </div>
+                </section>
+        </div>
+    </div>
+
+    <div>
+
+    </div>
+
+    <script src="../static/javaScript/MainPage.js">
+        workSpaceGenerator();
+    </script>
+    <script src="../static/javaScript/login.js"></script>
+    <script src="../static/javaScript/register.js"></script>
+    <script src="../static/javaScript/account.js"></script>
+</body>
+</html>

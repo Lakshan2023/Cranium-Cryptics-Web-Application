@@ -289,7 +289,7 @@ body, html {
 }
 
 .profile-header{
-    width: 24%;
+    width: 18%;
     height:100%;
     display: flex;
     flex-direction: row;
@@ -641,7 +641,13 @@ body, html {
     align-items: center;
 }
 
+.user-name{
+    margin-left: 5px;
+}
 
+.profile-viewer-list-element:active {
+    box-shadow: 0 0 15px rgba(225, 225, 225, 0.6);
+}
 
 
 @keyframes pulse {

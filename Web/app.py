@@ -10,6 +10,9 @@ from keras.models import load_model
 
 app = Flask(__name__)
 
+# Multi disease detection model
+model_multi_disease = load_model('C:/Users/laksh/OneDrive/Desktop/Web/models/vgg19_multi_disease.h5')
+
 # Tumor Detection Models
 tumor_vgg_16 = load_model('C:/Users/laksh/OneDrive/Desktop/Web/models/TumorDetectionModel_VGG-16.h5')
 tumor_vgg_19 = load_model('C:/Users/laksh/OneDrive/Desktop/Web/models/tumormodel_vgg19.h5')
@@ -35,7 +38,7 @@ model_efficient_net_alzheimer = load_model(
 # Load the model
 @app.route('/')
 def dashboard():
-    return render_template('Dashboard.html', data="dashboard")
+    return render_template('login.html', data="dashboard")
 
 
 @app.route('/BrainStrokeDetector')
@@ -73,6 +76,11 @@ def login():
     return render_template('login.html')
 
 
+@app.route('/account')
+def account():
+    return render_template('account.html')
+
+
 @app.route('/tumor', methods=['POST'])
 def predict_tumour_type():
     # Assigning the voting for tumor detection
@@ -82,6 +90,10 @@ def predict_tumour_type():
     label_mapping_side = {0: 'Axial', 1: 'Coronal', 3: 'Sagittal'}
 
     label_mapping_classification = {0: 'Glioma', 1: 'Meningioma', 3: 'Pituitary', 2: 'NoTumor'}
+
+    label_mapping_multi_disease = {0: 'Tumor', 1: 'Alzheimer', 2: 'Stroke'}
+
+    label_mapping_meningioma_stroke = {'Meningioma': 0, 'Stroke': 1}
 
     imagefile = request.files['imagefile']
     image_path = "./static/predictingBrainClassificationImages/" + imagefile.filename
@@ -127,7 +139,21 @@ def predict_tumour_type():
     prediction_array = [0, 0]
     score_array = [0, 0]
 
+    all_disease_vgg_19_probability = model_multi_disease.predict(classification_image_array)[0]
+    print(all_disease_vgg_19_probability)
+    all_disease_score = all_disease_vgg_19_probability[np.argmax(all_disease_vgg_19_probability)]
+    all_disease_prediction = np.argmax(all_disease_vgg_19_probability)
+
+    if all_disease_prediction != 0:
+        prediction_array[0] = "Normal"
+        prediction_array[1] = "No Tumour"
+        score_array[0] = "{:.2f}".format(all_disease_score)
+        score_array[1] = "{:.2f}".format(all_disease_score)
+        return render_template('BrainTumourDetector.html', image_path=image_path, predicted_class=prediction_array,
+                               score=score_array)
+
     detector_vgg_16_probability = tumor_vgg_16.predict(detector_image_array)[0]
+
     detector_score = detector_vgg_16_probability[np.argmax(detector_vgg_16_probability)]
     detector_prediction = np.argmax(detector_vgg_16_probability)
 
@@ -229,17 +255,42 @@ def predict_stroke():
     plt.imshow(image)
     plt.show()
 
-    label_mapping = {0: 'Ischemic', 1: 'Normal'}
-    image = np.expand_dims(image, axis=0)
-    predictions = model_resnet50_stroke.predict(image)
-    class_name = np.argmax(predictions)
+    classification_image = load_img(image_path, target_size=(256, 256))
 
-    side_prediction = model_side_detection.predict(image)
+    multi_image_array = apply_gamma_correction(classification_image, 1.5)
+
+    # Convert PIL Classification image to array
+    multi_image_array = img_to_array(multi_image_array)
+
+    # Expand dimensions to match the input shape expected by the model
+    multi_image_array = np.expand_dims(multi_image_array, axis=0)
+
+    all_disease_vgg_19_probability = model_multi_disease.predict(multi_image_array)[0]
+    all_disease_score = all_disease_vgg_19_probability[np.argmax(all_disease_vgg_19_probability)]
+    all_disease_prediction = np.argmax(all_disease_vgg_19_probability)
+
+    if all_disease_prediction != 2:
+        side_prediction = model_side_detection.predict(multi_image_array)
+        side_prediction_score = side_prediction[0][np.argmax(side_prediction)]
+        side_class = np.argmax(side_prediction)
+        side_name = label_mapping_side[side_class]
+
+        class_name = ["Normal", side_name]
+        prediction_score = ["{:.2f}".format(all_disease_score), "{:.2f}".format(side_prediction_score)]
+        return render_template('BrainStrokeDetector.html', image_path=image_path, class_name=class_name,
+                               prediction_score=prediction_score)
+
+    side_prediction = model_side_detection.predict(multi_image_array)
     side_prediction_score = side_prediction[0][np.argmax(side_prediction)]
     side_class = np.argmax(side_prediction)
     side_name = label_mapping_side[side_class]
 
     print(f"Predicted Side: {side_name}, Score: {side_prediction_score}")
+
+    label_mapping = {0: 'Ischemic', 1: 'Normal'}
+    image = np.expand_dims(image, axis=0)
+    predictions = model_resnet50_stroke.predict(image)
+    class_name = np.argmax(predictions)
 
     # Get the prediction score
     prediction_score = predictions[0][class_name]
@@ -268,6 +319,8 @@ from keras.preprocessing.image import img_to_array
 
 @app.route('/alzheimer', methods=['POST'])
 def predict_alzheimer():
+    label_mapping_side = {0: 'Axial', 1: 'Coronal', 3: 'Sagittal'}
+
     imagefile = request.files['imagefile']
     image_path = "./static/PredictingAlzheimerImages/" + imagefile.filename
     print(image_path)
@@ -278,6 +331,32 @@ def predict_alzheimer():
     image = apply_random_up_sampler_gaussian_filter(image)
     plt.imshow(image)
     plt.show()
+
+    classification_image = load_img(image_path, target_size=(256, 256))
+
+    multi_image_array = apply_gamma_correction(classification_image, 1.5)
+
+    # Convert PIL Classification image to array
+    multi_image_array = img_to_array(multi_image_array)
+
+    # Expand dimensions to match the input shape expected by the model
+    multi_image_array = np.expand_dims(multi_image_array, axis=0)
+
+    all_disease_vgg_19_probability = model_multi_disease.predict(multi_image_array)[0]
+    all_disease_score = all_disease_vgg_19_probability[np.argmax(all_disease_vgg_19_probability)]
+    all_disease_prediction = np.argmax(all_disease_vgg_19_probability)
+
+    if all_disease_prediction != 1:
+        side_prediction = model_side_detection.predict(multi_image_array)
+        side_prediction_score = side_prediction[0][np.argmax(side_prediction)]
+        side_class = np.argmax(side_prediction)
+        side_name = label_mapping_side[side_class]
+
+        class_name = ["Normal", side_name]
+        prediction_score = ["{:.2f}".format(all_disease_score), "{:.2f}".format(side_prediction_score)]
+        return render_template('AlzheimerDiseaseDetector.html', image_path=image_path,
+                               predicted_class=class_name,
+                               score=prediction_score)
 
     label_mapping = {'VeryMildDemented': 0, 'NonDemented': 1, 'ModerateDemented': 2, 'MildDemented': 3}
 
@@ -298,10 +377,153 @@ def predict_alzheimer():
     # Get the score of the predicted class
     score = probabilities[predicted_class_index]
 
+    side_prediction = model_side_detection.predict(multi_image_array)
+    side_prediction_score = side_prediction[0][np.argmax(side_prediction)]
+    side_class = np.argmax(side_prediction)
+    side_name = label_mapping_side[side_class]
+
+    predicted_class_array = [predicted_class, side_name]
+    score_array = ["{:.2f}".format(score), "{:.2f}".format(side_prediction_score)]
+
     print(f"Predicted Class: {predicted_class}, Score: {score}")
 
-    return render_template('AlzheimerDiseaseDetector.html', image_path=image_path, predicted_class=predicted_class,
-                           score=score)
+    return render_template('AlzheimerDiseaseDetector.html', image_path=image_path,
+                           predicted_class=predicted_class_array,
+                           score=score_array)
+
+
+@app.route('/generateReport', methods=['POST'])
+def generateReport():
+    disease_status = {"Tumour": "Not Detected", "Tumour Type": "Not Detected", "Alzheimer": "Not Detected",
+                      "Stroke": "Not Detected", "Edge": "Not Detected"}
+    disease_score = {"Tumour": 0, "Tumour Type": 0, "Alzheimer": 0, "Stroke": 0, "Edge": 0}
+    label_mapping_detector = {0: "Tumor", 1: "Normal"}
+    label_mapping_classification = {0: 'Glioma', 1: 'Meningioma', 3: 'Pituitary', 2: 'NoTumor'}
+    label_mapping_alzheimer = {'VeryMildDemented': 0, 'NonDemented': 1, 'ModerateDemented': 2, 'MildDemented': 3}
+
+    imagefile = request.files['imagefile']
+    image_path = "./static/PredictingAlzheimerImages/" + imagefile.filename
+    print(image_path)
+    imagefile.save(image_path)
+    image = load_img(image_path, target_size=(256, 256))
+    plt.imshow(image)
+
+    image = img_to_array(image)
+
+    gamma_image = apply_gamma_correction(image, 1.5)
+    plt.imshow(gamma_image)
+    plt.title("Gamma Corrected Image")
+    plt.show()
+
+    sobel_image = apply_sobel8_filter(gamma_image)
+    plt.imshow(sobel_image)
+    plt.title("Sobel Filter Image")
+    plt.show()
+
+    gamma_image_expand = np.expand_dims(gamma_image, axis=0)
+
+    all_disease_vgg_19_probability = model_multi_disease.predict(gamma_image_expand)[0]
+    all_disease_score = all_disease_vgg_19_probability[np.argmax(all_disease_vgg_19_probability)]
+    all_disease_prediction = np.argmax(all_disease_vgg_19_probability)
+
+    print(all_disease_prediction)
+
+    if all_disease_prediction == 0:
+        detector_vgg_16_probability = tumor_vgg_16.predict(gamma_image_expand)[0]
+        detector_score = detector_vgg_16_probability[np.argmax(detector_vgg_16_probability)]
+        detector_prediction = np.argmax(detector_vgg_16_probability)
+
+        if detector_prediction == 0:
+            # Predict class probabilities
+            probability_vgg16 = classification_vgg_16.predict(gamma_image_expand)[0]
+            probability_vgg19 = classification_vgg_19.predict(gamma_image_expand)[0]
+            probability_resnet50 = classification_resnet_50.predict(gamma_image_expand)[0]
+
+            probabilities = ((probability_vgg16 + probability_vgg19 + probability_resnet50) / 3)
+
+            score = probabilities[np.argmax(probabilities)]
+
+            # Get the predicted class index
+            predicted_class_index = np.argmax(probabilities)
+
+            # Get the predicted class label
+            predicted_class = label_mapping_classification[predicted_class_index]
+
+            print(predicted_class)
+
+            disease_status["Tumour"] = label_mapping_detector[detector_prediction]
+            disease_score["Tumour"] = "{:.2f}".format(detector_score)
+
+            disease_status["Tumour Type"] = predicted_class
+            disease_score["Tumour Type"] = "{:.2f}".format(detector_score)
+
+            return render_template('ReportGenerator.html', image_path=image_path, score=disease_score,
+                                   predicted_class=disease_status)
+
+        else:
+            disease_status["Tumour"] = label_mapping_detector[detector_prediction]
+            disease_score["Tumour"] = "{:.2f}".format(detector_score)
+
+            disease_status["Tumour Type"] = label_mapping_detector[detector_prediction]
+            disease_score["Tumour Type"] = "{:.2f}".format(detector_score)
+
+            return render_template('ReportGenerator.html', image_path=image_path, score=disease_score,
+                                   predicted_class=disease_status)
+
+
+    elif all_disease_prediction == 1:
+        image = load_img(image_path, target_size=(256, 256))
+        plt.imshow(image)
+        plt.show()
+        image = apply_random_up_sampler_gaussian_filter(image)
+        plt.imshow(image)
+        plt.show()
+
+        # Convert PIL image to array
+        image_array = img_to_array(image)
+        # Expand dimensions to match the input shape expected by the model
+        image_array = np.expand_dims(image_array, axis=0)
+
+        # Predict class probabilities
+        probabilities = model_efficient_net_alzheimer.predict(image_array)[0]
+
+        # Get the predicted class index
+        predicted_class_index = np.argmax(probabilities)
+
+        # Get the predicted class label
+        predicted_class = list(label_mapping_alzheimer.keys())[predicted_class_index]
+
+        # Get the score of the predicted class
+        score = probabilities[predicted_class_index]
+
+        disease_status["Alzheimer"] = predicted_class
+        disease_score["Alzheimer"] = "{:.2f}".format(score)
+
+        print(predicted_class)
+
+        return render_template('ReportGenerator.html', image_path=image_path, score=disease_score,
+                               predicted_class=disease_status)
+
+
+    elif all_disease_prediction == 2:
+        label_mapping = {0: 'Ischemic', 1: 'Not Detected'}
+        image = np.expand_dims(sobel_image, axis=0)
+        predictions = model_resnet50_stroke.predict(image)
+        class_name = np.argmax(predictions)
+
+        # Get the prediction score
+        prediction_score = predictions[0][class_name]
+
+        print(label_mapping[class_name])
+
+        disease_status["Stroke"] = label_mapping[class_name]
+
+        disease_score["Stroke"] = "{:.2f}".format(prediction_score)
+
+        return render_template('ReportGenerator.html', image_path=image_path, score=disease_score,
+                               predicted_class=disease_status)
+
+    return render_template('ReportGenerator.html', image_path=image_path)
 
 
 if __name__ == '__main__':
