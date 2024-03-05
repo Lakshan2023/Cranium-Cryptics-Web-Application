@@ -65,7 +65,8 @@
                          <h3 class="personal-info-header">Profile Image</h3>
                          <div class="text-center">
                             <img id="previewImage" src="../static/images/profile.jpeg" class="avatar img-circle" alt="avatar">
-                            <input type="file" class="form-control fc1" id="uploadInput">
+                            <input type="file" class="form-control fc1" id="uploadInput" accept="image/png, image/jpeg"
+                            onchange="getFile(event);">
                          </div>
                       </div>
 
@@ -73,36 +74,33 @@
 
                             <h3 class="personal-info-header">Personal information</h3>
 
-                            <form class="form-horizontal" role="form">
+                            <form  class="form-horizontal" id="profileForm">
                                 <div class="form-group">
-                                    <label class="col control-label">Username:</label>
-                                    <input class="form-control user-control control-bar" type="text">
-                                  </div>
+                                    <label for="change__userName" class="col control-label">Username:</label>
+                                    <input id="change__userName" name="change__userName" class="form-control user-control control-bar" type="text" required>
+                                </div>
 
-                                  <div class="form-group">
-                                    <label class="col-lg-3 control-label">Email:</label>
-                                    <input class="form-control email-control control-bar" type="text">
-                                  </div>
+                                <div class="form-group">
+                                    <label for="change__email" class="col-lg-3 control-label">Email:</label>
+                                    <input id="change__email" name="change__email" class="form-control email-control control-bar" type="email" required>
+                                </div>
 
-                                  <div class="form-group">
-                                    <label class="col control-label">Password:</label>
-                                    <input class="form-control password-control control-bar" type="password">
-                                  </div>
+                                <div class="form-group">
+                                    <label for="change__password" class="col control-label">Password:</label>
+                                    <input id="change__password" name="change__password" class="form-control password-control control-bar" type="password" required>
+                                </div>
 
-                                  <div class="form-group">
-                                     <label class="col control-label">Confirm password:</label>
-                                     <input class="form-control confirm-password-control control-bar" type="password">
-                                  </div>
+                                <div class="form-group">
+                                    <label for="change__password__confirm" class="col control-label">Confirm password:</label>
+                                    <input id="change__password__confirm" name="change__password__confirm" class="form-control confirm-password-control control-bar" type="password" required>
+                                </div>
 
-                                  <div class="form-group">
-                                    <label class="col control-label"></label>
+                                <div class="form-group">
                                     <div class="col-md-8">
-                                      <input type="button" class="btn btn-primary" value="Save Changes">
-                                      <span></span>
-                                      <input type="button" class="btn btn-default" value="Reset" onclick="clearFileInput()">
+                                        <button type="button" class="btn btn-primary" onclick="updateUserDetails(event);">Save Changes</button>
+                                        <button type="button" class="btn btn-default"  onclick="clearFileInput();">Reset</button>
                                     </div>
-                                  </div>
-
+                                </div>
                             </form>
                       </div>
                 </div>
@@ -132,15 +130,20 @@
         </div>
     </div>
 
-    <div>
-
+    <div class="detail-error">
+       This is a message
     </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/7.14.1-0/firebase.js"></script>
 
     <script src="../static/javaScript/MainPage.js">
         workSpaceGenerator();
+        displayUserName();
     </script>
-    <script src="../static/javaScript/login.js"></script>
-    <script src="../static/javaScript/register.js"></script>
+
+
     <script src="../static/javaScript/account.js"></script>
+
+
 </body>
 </html>

@@ -12,7 +12,7 @@ firebase.initializeApp(firebaseConfig);
 
 const getElementVal = (id) => {
   return document.getElementById(id).value;
-  };
+};
 
 var hForm = firebase.database().ref('UserData')
 
@@ -38,9 +38,10 @@ hForm.child(loginUsername).once('value', function(snapshot) {
             if (loginPassword === storedPassword) {
               displayAlert("Login Successfull")
               getData(loginUsername);
+
               setTimeout(() => {
                 window.location.href = '/Dashboard';
-            }, 1500);
+            }, 1000);
 
             } else {
               displayAlert("Incorrect password")
@@ -92,3 +93,19 @@ function getData(userName) {
         }
     });
 }
+
+function createUserCollection(user){
+    firebase.firestore().collection("users").
+    doc(user.userName).set({
+        userName: user.userName,
+        email: user.email,
+        password: user.password,
+    })
+}
+
+async function getUserData(userName){
+    const user = await firebase.firestore().collection("users").doc(userName).get();
+    return user.data();
+}
+
+

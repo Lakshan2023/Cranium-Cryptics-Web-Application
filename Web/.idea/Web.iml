@@ -9,6 +9,7 @@
     </content>
     <orderEntry type="jdk" jdkName="Python 3.11" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="html2pdf.js" level="application" />
   </component>
   <component name="SonarLintModuleSettings">
     <option name="uniqueId" value="3da5a0d2-8d34-4069-81bc-9649c2116c92" />

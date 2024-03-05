@@ -7,7 +7,7 @@
     --primaryColor:#789798;
     --secondaryColor:#F2F2F0;
     --thirdColor: #6e6969;
-    --fourthColor: #2C3333;
+    --fourthColor: #202121;
 }
 
 .dashboard-panes{
@@ -170,4 +170,11 @@
 
 .dashboard-copyright{
     height: 15vh;
+}
+
+.detail-error{
+    position: absolute;
+    align-items: center;
+    display: none;
+
 }

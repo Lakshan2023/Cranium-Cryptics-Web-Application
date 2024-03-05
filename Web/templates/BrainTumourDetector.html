@@ -152,16 +152,21 @@
         </div>
     </div>
 
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/7.14.1-0/firebase.js"></script>
     <script src="../static/javaScript/MainPage.js">
         const image_path = "{{ image_path }}";
         displayUpdateTumorStatus();
         window.addEventListener('DOMContentLoaded', function() {
             clickScan(image_path);
         });
+
     </script>
 
     <script src="../static/javaScript/BrainTumorDitector.js">
         imageAfterScan();
     </script>
+
+
 </body>
 </html>

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, make_response
 from keras.preprocessing.image import load_img
 from matplotlib import pyplot as plt
 import numpy as np
@@ -7,6 +7,9 @@ import cv2
 from scipy.ndimage import gaussian_filter
 from sklearn.utils import resample
 from keras.models import load_model
+import os
+import json
+import requests
 
 app = Flask(__name__)
 
@@ -79,6 +82,11 @@ def login():
 @app.route('/account')
 def account():
     return render_template('account.html')
+
+
+@app.route('/report')
+def report():
+    return render_template('report.html')
 
 
 @app.route('/tumor', methods=['POST'])
@@ -457,6 +465,8 @@ def generateReport():
             disease_status["Tumour Type"] = predicted_class
             disease_score["Tumour Type"] = "{:.2f}".format(detector_score)
 
+            generate_pdf()
+
             return render_template('ReportGenerator.html', image_path=image_path, score=disease_score,
                                    predicted_class=disease_status)
 
@@ -466,6 +476,8 @@ def generateReport():
 
             disease_status["Tumour Type"] = label_mapping_detector[detector_prediction]
             disease_score["Tumour Type"] = "{:.2f}".format(detector_score)
+
+            generate_pdf()
 
             return render_template('ReportGenerator.html', image_path=image_path, score=disease_score,
                                    predicted_class=disease_status)
@@ -501,6 +513,8 @@ def generateReport():
 
         print(predicted_class)
 
+        generate_pdf()
+
         return render_template('ReportGenerator.html', image_path=image_path, score=disease_score,
                                predicted_class=disease_status)
 
@@ -520,10 +534,156 @@ def generateReport():
 
         disease_score["Stroke"] = "{:.2f}".format(prediction_score)
 
+        generate_pdf()
+
         return render_template('ReportGenerator.html', image_path=image_path, score=disease_score,
                                predicted_class=disease_status)
 
     return render_template('ReportGenerator.html', image_path=image_path)
+
+
+def generate_dynamic_data():
+
+    tumourDiseaseStatus = disease_status.get("Tumour")
+    tumourDiseaseProbabilityStatus = disease_score.get("Tumour Score")
+
+    tumourTypeStatus = disease_status.get("Tumour Type")
+    tumourTypeProbabilityStatus = disease_score.get("Tumour Type Score")
+
+    AlzheimerDiseaseStatus = disease_status.get("Alzheimer")
+    AlzheimerDiseaseProbabilityStatus = disease_score.get("Alzheimer Score")
+
+    strokeDieseaseStatus  = disease_status.get("Stroke")
+    strokeDieseaseProbabiltyStatus = disease_score.get("Stroke Score")
+
+    edgeStatus  = disease_status.get("Edge")
+    edgeProbabiltyStatus = disease_score.get("Edge Score")
+
+
+    data = {
+        'edge_data': edgeStatus,
+        'edge_probability': edgeProbabiltyStatus,
+        'tumour_data': tumourDiseaseStatus,
+        'tumour_probability': tumourDiseaseProbabilityStatus,
+        'tumour_type_data': tumourTypeStatus,
+        'tumour_type_probability': tumourTypeProbabilityStatus,
+        'stroke_data': strokeDieseaseStatus,
+        'stroke_probability': strokeDieseaseProbabiltyStatus,
+        'alzheimers_data': AlzheimerDiseaseStatus,
+        'alzheimers_probability': AlzheimerDiseaseProbabilityStatus,
+    }
+    return data
+
+# Change the data in the html
+def reportGennerator():
+    dynamic_data = generate_dynamic_data()
+    return render_template('report.html', data=dynamic_data)
+
+
+# download the pdf after changing the data
+def download_pdf():
+    dynamic_data = generate_dynamic_data()
+    html_content = render_template('report.html', data=dynamic_data)
+
+    # Save the HTML content to a temporary file
+    with open('temp_file.html', 'w', encoding='utf-8') as temp_file:
+        temp_file.write(html_content)
+
+
+   # Configure pdfkit to use A4 page size
+    options = {
+        'page-size': 'A4',
+    }
+    # Convert HTML to PDF using pdfkit
+    pdfkit.from_file('temp_file.html', 'temp_file.pdf', options=options)
+
+    # Send the PDF file as a response and delete the temporary files
+    return send_file('temp_file.pdf', as_attachment=True, download_name='generated_report_Uzman.pdf', mimetype='application/pdf', cache_timeout=0)
+
+# # pip install requests
+
+# # The authentication key (API Key).
+# # Get your own by registering at https://app.pdf.co
+# API_KEY = "lakshancooray23@gmail.com_bx1ri33VsBaJRE18N2Kavme02m3ARIY1Y1LW44dj4P3dv7rF83rJ22YhZFGg7qS0"
+
+# # Base URL for PDF.co Web API requests
+# BASE_URL = "https://api.pdf.co/v1"
+
+# # HTML template
+# file_read = open("templates/report.html", mode='r', encoding='utf-8')
+# SampleHtml = file_read.read()
+# file_read.close()
+
+# # Destination PDF file name
+# DestinationFile = ".\\result.pdf"
+
+
+def generate_pdf(args=None):
+    GeneratePDFFromHtml(SampleHtml, DestinationFile)
+
+
+def GeneratePDFFromHtml(SampleHtml, destinationFile):
+    """Converts HTML to PDF using PDF.co Web API"""
+
+    # Prepare requests params as JSON
+    # See documentation: https://apidocs.pdf.co/?#1-json-pdfconvertfromhtml
+    parameters = {}
+
+    # Input HTML code to be converted. Required.
+    parameters["html"] = SampleHtml
+
+    #  Name of resulting file
+    parameters["name"] = os.path.basename(destinationFile)
+
+    # Set to css style margins like 10 px or 5px 5px 5px 5px.
+    parameters["margins"] = "0 0 0 0"
+
+    # Can be Letter, A4, A5, A6 or custom size like 200x200
+    parameters["paperSize"] = "Letter"
+
+    # Set to Portrait or Landscape. Portrait by default.
+    parameters["orientation"] = "Portrait"
+
+    # true by default. Set to false to disable printing of background.
+    parameters["printBackground"] = "true"
+
+    # If large input document, process in async mode by passing true
+    parameters["async"] = "false"
+
+    # Set to HTML for header to be applied on every page at the header.
+    parameters["header"] = ""
+
+    # Set to HTML for footer to be applied on every page at the bottom.
+    parameters["footer"] = ""
+
+    # Prepare URL for 'HTML To PDF' API request
+    url = "{}/pdf/convert/from/html".format(
+        BASE_URL
+    )
+
+    # Execute request and get response as JSON
+
+    response = requests.post(url, data=parameters, headers={"x-api-key": API_KEY})
+    if (response.status_code == 200):
+        json = response.json()
+
+        if json["error"] == False:
+            #  Get URL of result file
+            resultFileUrl = json["url"]
+            # Download result file
+            r = requests.get(resultFileUrl, stream=True)
+            if (r.status_code == 200):
+                with open(destinationFile, 'wb') as file:
+                    for chunk in r:
+                        file.write(chunk)
+                print(f"Result file saved as \"{destinationFile}\" file.")
+            else:
+                print(f"Request error: {response.status_code} {response.reason}")
+        else:
+            # Show service reported error
+            print(json["message"])
+    else:
+        print(f"Request error: {response.status_code} {response.reason}")
 
 
 if __name__ == '__main__':

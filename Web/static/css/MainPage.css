@@ -13,7 +13,7 @@
     --primaryColor: #bfbfbf;
     --secondaryColor:#F2F2F0;
     --thirdColor: #a7a7a7;
-    --fourthColor: #8f8f8f;
+    --fourthColor: #383838;
 }
 
 body, html {
@@ -647,6 +647,10 @@ body, html {
 
 .profile-viewer-list-element:active {
     box-shadow: 0 0 15px rgba(225, 225, 225, 0.6);
+}
+
+.profile-image{
+    border: 2px solid #e5e2e2;
 }
 
 

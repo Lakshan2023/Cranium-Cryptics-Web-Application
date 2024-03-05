@@ -241,3 +241,5 @@ document.querySelector(".scan-button").addEventListener("click", handleFileInput
 
 
 
+
+
