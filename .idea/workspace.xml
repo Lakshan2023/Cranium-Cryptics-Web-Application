@@ -5,8 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e1a00219-e493-472a-a80a-26117a761181" name="Changes" comment="Report generation in HTML">
+      <change afterPath="$PROJECT_DIR$/Web/static/reportGenerator/ReportGeneratoHTML_to_PDF.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Web/static/reportGenerator/report.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Web/static/reportGenerator/wkhtmltox-0.12.6-1.msvc2015-win64.exe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Web/templates/report.html" beforeDir="false" afterPath="$PROJECT_DIR$/Web/templates/report.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -16,6 +18,7 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="Python Script" />
         <option value="HTML File" />
       </list>
     </option>
@@ -61,12 +64,13 @@
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
     &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
+    &quot;Python.ReportGeneratoHTML_to_PDF.executor&quot;: &quot;Run&quot;,
     &quot;Python.app.executor&quot;: &quot;Run&quot;,
     &quot;Python.reportGenerator.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;Uzman&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/Cranium-Cryptics-Web-Application/.venv&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/Cranium-Cryptics-Web-Application/Web/static/reportGenerator&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -76,6 +80,11 @@
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\Cranium-Cryptics-Web-Application\Web\static\reportGenerator" />
+    </key>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -102,6 +111,8 @@
       <workItem from="1709314712793" duration="712000" />
       <workItem from="1709471080714" duration="1226000" />
       <workItem from="1709490529027" duration="838000" />
+      <workItem from="1709631271996" duration="1486000" />
+      <workItem from="1709632773470" duration="288000" />
     </task>
     <task id="LOCAL-00001" summary="report generation continuation">
       <option name="closed" value="true" />
@@ -158,5 +169,6 @@
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Cranium_Cryptics_Web_Application$reportGenerator.coverage" NAME="reportGenerator Coverage Results" MODIFIED="1708921797261" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Web/static/reportGenerator" />
     <SUITE FILE_PATH="coverage/Cranium_Cryptics_Web_Application$app.coverage" NAME="app Coverage Results" MODIFIED="1708921805550" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Web" />
+    <SUITE FILE_PATH="coverage/Cranium_Cryptics_Web_Application$ReportGeneratoHTML_to_PDF.coverage" NAME="ReportGeneratoHTML_to_PDF Coverage Results" MODIFIED="1709633014728" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Web/static/reportGenerator" />
   </component>
 </project>
