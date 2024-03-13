@@ -84,9 +84,44 @@
 }
 
 .scan-button{
-    width: 42%;
+    all:unset;
 }
 
+.generate-report-tab {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Two columns, each taking equal space */
+    gap: 0; /* No gap between the columns */
+    margin-top: 20px;
+    width: 30vw;
+    height: 7vh;
+}
+
+.generate-report-tab button,
+.generate-report-tab a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px; /* Adjust padding as needed */
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    background-color: #1e2c34; /* Example color, change as needed */
+    color: white; /* Text color */
+    font-size: 20px;
+}
+
+.generate-report-tab button:hover,
+.generate-report-tab a:hover {
+    background-color: #25363f; /* Example color, change as needed */
+}
+
+.generate-report-tab .report-link {
+    background-color: #3b5160; /* Example color, change as needed */
+}
+
+.generate-report-tab .report-link:hover {
+    background-color: #597181; /* Example color, change as needed */
+}
 
 
 

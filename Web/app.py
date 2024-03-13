@@ -1,3 +1,4 @@
+from PIL.Image import fromarray
 from flask import Flask, render_template, request, make_response
 from keras.preprocessing.image import load_img
 from matplotlib import pyplot as plt
@@ -7,9 +8,6 @@ import cv2
 from scipy.ndimage import gaussian_filter
 from sklearn.utils import resample
 from keras.models import load_model
-import os
-import json
-import requests
 
 app = Flask(__name__)
 
@@ -36,6 +34,8 @@ model_tumor_classification_vgg16 = load_model(
 model_resnet50_stroke = load_model('C:/Users/laksh/OneDrive/Desktop/Web/models/ischemic_stroke_vgg16.h5')
 model_efficient_net_alzheimer = load_model(
     'C:/Users/laksh/OneDrive/Desktop/Web/models/alzhimer_classification_efficientNet.h5')
+
+model_brain_image_detection = load_model('C:/Users/laksh/OneDrive/Desktop/Web/models/brain_image_detection.h5')
 
 
 # Load the model
@@ -84,15 +84,12 @@ def account():
     return render_template('account.html')
 
 
-@app.route('/report')
-def report():
-    return render_template('report.html')
-
-
 @app.route('/tumor', methods=['POST'])
 def predict_tumour_type():
     # Assigning the voting for tumor detection
     label_mapping_detector = {0: "Tumor", 1: "Normal"}
+
+    label_mapping_brain = {1: 'BrainImages', 0: 'NotBrainImage'}
 
     # Label mapping for side detection
     label_mapping_side = {0: 'Axial', 1: 'Coronal', 3: 'Sagittal'}
@@ -108,6 +105,32 @@ def predict_tumour_type():
     imagefile.save(image_path)
 
     classification_image = load_img(image_path, target_size=(256, 256))
+
+    image = load_img(image_path, target_size=(256, 256))
+    image = np.array(image)
+    gray_scale_image = apply_gaussian_gray_scale_filter(image)
+
+    plt.imshow(gray_scale_image, cmap='gray')
+    plt.title("Gray Scale Image")
+    plt.show()
+
+    print(gray_scale_image.shape)
+
+    # Prepare the grayscale image for prediction
+    brain_image = np.expand_dims(gray_scale_image, axis=0)
+
+    # Predict the class probabilities for the brain image
+    class_probabilities = model_brain_image_detection.predict(brain_image)
+
+    # Get the predicted class index
+    predicted_class_index = np.argmax(class_probabilities)
+
+    # Get the corresponding class name from the label mapping
+    predicted_class_name = label_mapping_brain[predicted_class_index]
+
+    # Get the score for the predicted class
+    brain_detection_score = class_probabilities[0][predicted_class_index]
+
     detector_image = load_img(image_path, target_size=(256, 256))
 
     # Plotting the classification image
@@ -146,6 +169,14 @@ def predict_tumour_type():
 
     prediction_array = [0, 0]
     score_array = [0, 0]
+
+    if predicted_class_name == 'NotBrainImage':
+        prediction_array[0] = "Not Brain Image"
+        prediction_array[1] = "Not Brain Image"
+        score_array[0] = "{:.2f}".format(brain_detection_score)
+        score_array[1] = "{:.2f}".format(brain_detection_score)
+        return render_template('BrainTumourDetector.html', image_path=image_path, predicted_class=prediction_array,
+                               score=score_array)
 
     all_disease_vgg_19_probability = model_multi_disease.predict(classification_image_array)[0]
     print(all_disease_vgg_19_probability)
@@ -252,6 +283,7 @@ def apply_sobel8_filter(image):
 def predict_stroke():
     # Label mapping for side detection
     label_mapping_side = {0: 'Axial', 1: 'Coronal', 3: 'Sagittal'}
+    label_mapping_brain = {1: 'BrainImages', 0: 'NotBrainImage'}
 
     imagefile = request.files['imagefile']
     image_path = "./static/predictingStrokeImages/" + imagefile.filename
@@ -259,6 +291,40 @@ def predict_stroke():
     image = load_img(image_path, target_size=(256, 256))
     plt.imshow(image)
     plt.show()
+
+    image = np.array(image)
+
+    gray_scale_image = apply_gaussian_gray_scale_filter(image)
+
+    plt.imshow(gray_scale_image, cmap='gray')
+    plt.title("Gray Scale Image")
+    plt.show()
+
+    print(gray_scale_image.shape)
+
+    # Prepare the grayscale image for prediction
+    brain_image = np.expand_dims(gray_scale_image, axis=0)
+
+    # Predict the class probabilities for the brain image
+    class_probabilities = model_brain_image_detection.predict(brain_image)
+
+    # Get the predicted class index
+    predicted_class_index = np.argmax(class_probabilities)
+
+    # Get the corresponding class name from the label mapping
+    predicted_class_name = label_mapping_brain[predicted_class_index]
+
+    # Get the score for the predicted class
+    brain_detection_score = class_probabilities[0][predicted_class_index]
+
+    print(predicted_class_name)
+
+    if predicted_class_name == 'NotBrainImage':
+        class_name = ["Not Brain Image", "Not Brain Image"]
+        prediction_score = ["{:.2f}".format(brain_detection_score), "{:.2f}".format(brain_detection_score)]
+        return render_template('BrainStrokeDetector.html', image_path=image_path, class_name=class_name,
+                               prediction_score=prediction_score)
+
     image = apply_sobel8_filter(image)
     plt.imshow(image)
     plt.show()
@@ -322,12 +388,23 @@ def apply_random_up_sampler_gaussian_filter(image):
     return filtered_img
 
 
+def apply_gaussian_gray_scale_filter(image):
+    # Apply Gaussian blur
+    blurred_image = cv2.GaussianBlur(image, (5, 5), 0)
+
+    # Convert image to grayscale
+    gray_scale_image = cv2.cvtColor(blurred_image, cv2.COLOR_BGR2GRAY)
+
+    return gray_scale_image
+
+
 from keras.preprocessing.image import img_to_array
 
 
 @app.route('/alzheimer', methods=['POST'])
 def predict_alzheimer():
     label_mapping_side = {0: 'Axial', 1: 'Coronal', 3: 'Sagittal'}
+    label_mapping_brain = {1: 'BrainImages', 0: 'NotBrainImage'}
 
     imagefile = request.files['imagefile']
     image_path = "./static/PredictingAlzheimerImages/" + imagefile.filename
@@ -342,6 +419,29 @@ def predict_alzheimer():
 
     classification_image = load_img(image_path, target_size=(256, 256))
 
+    gray_scale_image = apply_gaussian_gray_scale_filter(image)
+
+    plt.imshow(gray_scale_image, cmap='gray')
+    plt.title("Gray Scale Image")
+    plt.show()
+
+    print(gray_scale_image.shape)
+
+    # Prepare the grayscale image for prediction
+    brain_image = np.expand_dims(gray_scale_image, axis=0)
+
+    # Predict the class probabilities for the brain image
+    class_probabilities = model_brain_image_detection.predict(brain_image)
+
+    # Get the predicted class index
+    predicted_class_index = np.argmax(class_probabilities)
+
+    # Get the corresponding class name from the label mapping
+    predicted_class_name = label_mapping_brain[predicted_class_index]
+
+    # Get the score for the predicted class
+    brain_detection_score = class_probabilities[0][predicted_class_index]
+
     multi_image_array = apply_gamma_correction(classification_image, 1.5)
 
     # Convert PIL Classification image to array
@@ -349,6 +449,13 @@ def predict_alzheimer():
 
     # Expand dimensions to match the input shape expected by the model
     multi_image_array = np.expand_dims(multi_image_array, axis=0)
+
+    if predicted_class_name == 'NotBrainImage':
+        class_name = ["Not Brain Image", "Not Brain Image"]
+        prediction_score = ["{:.2f}".format(brain_detection_score), "{:.2f}".format(brain_detection_score)]
+        return render_template('AlzheimerDiseaseDetector.html', image_path=image_path,
+                               predicted_class=class_name,
+                               score=prediction_score)
 
     all_disease_vgg_19_probability = model_multi_disease.predict(multi_image_array)[0]
     all_disease_score = all_disease_vgg_19_probability[np.argmax(all_disease_vgg_19_probability)]
@@ -400,23 +507,79 @@ def predict_alzheimer():
                            score=score_array)
 
 
+disease_status = {"Tumour": "Not Detected", "Tumour Type": "Not Detected", "Alzheimer": "Not Detected",
+                  "Stroke": "Not Detected", "Edge": "Not Detected"}
+
+disease_score = {"Tumour": 0.00, "Tumour Type": 0.00, "Alzheimer": 0.00, "Stroke": 0.00, "Edge": 0.00}
+
+required_image = None
+
+
 @app.route('/generateReport', methods=['POST'])
 def generateReport():
+    global disease_status, disease_score
     disease_status = {"Tumour": "Not Detected", "Tumour Type": "Not Detected", "Alzheimer": "Not Detected",
                       "Stroke": "Not Detected", "Edge": "Not Detected"}
-    disease_score = {"Tumour": 0, "Tumour Type": 0, "Alzheimer": 0, "Stroke": 0, "Edge": 0}
+
+    disease_score = {"Tumour": 0.00, "Tumour Type": 0.00, "Alzheimer": 0.00, "Stroke": 0.00, "Edge": 0.00}
+
+    label_mapping_brain = {1: 'BrainImages', 0: 'NotBrainImage'}
+    label_mapping_side = {0: 'Axial', 1: 'Coronal', 3: 'Sagittal'}
     label_mapping_detector = {0: "Tumor", 1: "Normal"}
     label_mapping_classification = {0: 'Glioma', 1: 'Meningioma', 3: 'Pituitary', 2: 'NoTumor'}
     label_mapping_alzheimer = {'VeryMildDemented': 0, 'NonDemented': 1, 'ModerateDemented': 2, 'MildDemented': 3}
 
     imagefile = request.files['imagefile']
     image_path = "./static/PredictingAlzheimerImages/" + imagefile.filename
+
+    global required_image
+    required_image = image_path
+
+    print(required_image)
+
     print(image_path)
     imagefile.save(image_path)
     image = load_img(image_path, target_size=(256, 256))
     plt.imshow(image)
 
     image = img_to_array(image)
+
+    gray_scale_image = apply_gaussian_gray_scale_filter(image)
+
+    plt.imshow(gray_scale_image, cmap='gray')
+    plt.title("Gray Scale Image")
+    plt.show()
+
+    print(gray_scale_image.shape)
+
+    # Prepare the grayscale image for prediction
+    brain_image = np.expand_dims(gray_scale_image, axis=0)
+
+    # Predict the class probabilities for the brain image
+    class_probabilities = model_brain_image_detection.predict(brain_image)
+
+    # Get the predicted class index
+    predicted_class_index = np.argmax(class_probabilities)
+
+    # Get the corresponding class name from the label mapping
+    predicted_class_name = label_mapping_brain[predicted_class_index]
+
+    # Get the score for the predicted class
+    brain_detection_score = class_probabilities[0][predicted_class_index]
+
+    if predicted_class_name == 'NotBrainImage':
+        disease_status["Tumour"] = "Not Brain Image"
+        disease_score["Tumour"] = "{:.2f}".format(brain_detection_score)
+        disease_status["Tumour Type"] = "Not Brain Image"
+        disease_score["Tumour Type"] = "{:.2f}".format(brain_detection_score)
+        disease_status["Alzheimer"] = "Not Brain Image"
+        disease_score["Alzheimer"] = "{:.2f}".format(brain_detection_score)
+        disease_status["Stroke"] = "Not Brain Image"
+        disease_score["Stroke"] = "{:.2f}".format(brain_detection_score)
+        disease_status["Edge"] = "Not Brain Image"
+        disease_score["Edge"] = "{:.2f}".format(brain_detection_score)
+        return render_template('ReportGenerator.html', image_path=image_path, score=disease_score,
+                               predicted_class=disease_status)
 
     gamma_image = apply_gamma_correction(image, 1.5)
     plt.imshow(gamma_image)
@@ -435,6 +598,14 @@ def generateReport():
     all_disease_prediction = np.argmax(all_disease_vgg_19_probability)
 
     print(all_disease_prediction)
+
+    side_prediction = model_side_detection.predict(gamma_image_expand)
+    side_prediction_score = side_prediction[0][np.argmax(side_prediction)]
+    side_class = np.argmax(side_prediction)
+    side_name = label_mapping_side[side_class]
+
+    disease_status["Edge"] = side_name
+    disease_score["Edge"] = "{:.2f}".format(side_prediction_score)
 
     if all_disease_prediction == 0:
         detector_vgg_16_probability = tumor_vgg_16.predict(gamma_image_expand)[0]
@@ -465,8 +636,6 @@ def generateReport():
             disease_status["Tumour Type"] = predicted_class
             disease_score["Tumour Type"] = "{:.2f}".format(detector_score)
 
-            generate_pdf()
-
             return render_template('ReportGenerator.html', image_path=image_path, score=disease_score,
                                    predicted_class=disease_status)
 
@@ -476,8 +645,6 @@ def generateReport():
 
             disease_status["Tumour Type"] = label_mapping_detector[detector_prediction]
             disease_score["Tumour Type"] = "{:.2f}".format(detector_score)
-
-            generate_pdf()
 
             return render_template('ReportGenerator.html', image_path=image_path, score=disease_score,
                                    predicted_class=disease_status)
@@ -513,8 +680,6 @@ def generateReport():
 
         print(predicted_class)
 
-        generate_pdf()
-
         return render_template('ReportGenerator.html', image_path=image_path, score=disease_score,
                                predicted_class=disease_status)
 
@@ -534,156 +699,17 @@ def generateReport():
 
         disease_score["Stroke"] = "{:.2f}".format(prediction_score)
 
-        generate_pdf()
-
         return render_template('ReportGenerator.html', image_path=image_path, score=disease_score,
                                predicted_class=disease_status)
 
     return render_template('ReportGenerator.html', image_path=image_path)
 
 
-def generate_dynamic_data():
-
-    tumourDiseaseStatus = disease_status.get("Tumour")
-    tumourDiseaseProbabilityStatus = disease_score.get("Tumour Score")
-
-    tumourTypeStatus = disease_status.get("Tumour Type")
-    tumourTypeProbabilityStatus = disease_score.get("Tumour Type Score")
-
-    AlzheimerDiseaseStatus = disease_status.get("Alzheimer")
-    AlzheimerDiseaseProbabilityStatus = disease_score.get("Alzheimer Score")
-
-    strokeDieseaseStatus  = disease_status.get("Stroke")
-    strokeDieseaseProbabiltyStatus = disease_score.get("Stroke Score")
-
-    edgeStatus  = disease_status.get("Edge")
-    edgeProbabiltyStatus = disease_score.get("Edge Score")
-
-
-    data = {
-        'edge_data': edgeStatus,
-        'edge_probability': edgeProbabiltyStatus,
-        'tumour_data': tumourDiseaseStatus,
-        'tumour_probability': tumourDiseaseProbabilityStatus,
-        'tumour_type_data': tumourTypeStatus,
-        'tumour_type_probability': tumourTypeProbabilityStatus,
-        'stroke_data': strokeDieseaseStatus,
-        'stroke_probability': strokeDieseaseProbabiltyStatus,
-        'alzheimers_data': AlzheimerDiseaseStatus,
-        'alzheimers_probability': AlzheimerDiseaseProbabilityStatus,
-    }
-    return data
-
-# Change the data in the html
-def reportGennerator():
-    dynamic_data = generate_dynamic_data()
-    return render_template('report.html', data=dynamic_data)
-
-
-# download the pdf after changing the data
-def download_pdf():
-    dynamic_data = generate_dynamic_data()
-    html_content = render_template('report.html', data=dynamic_data)
-
-    # Save the HTML content to a temporary file
-    with open('temp_file.html', 'w', encoding='utf-8') as temp_file:
-        temp_file.write(html_content)
-
-
-   # Configure pdfkit to use A4 page size
-    options = {
-        'page-size': 'A4',
-    }
-    # Convert HTML to PDF using pdfkit
-    pdfkit.from_file('temp_file.html', 'temp_file.pdf', options=options)
-
-    # Send the PDF file as a response and delete the temporary files
-    return send_file('temp_file.pdf', as_attachment=True, download_name='generated_report_Uzman.pdf', mimetype='application/pdf', cache_timeout=0)
-
-# # pip install requests
-
-# # The authentication key (API Key).
-# # Get your own by registering at https://app.pdf.co
-# API_KEY = "lakshancooray23@gmail.com_bx1ri33VsBaJRE18N2Kavme02m3ARIY1Y1LW44dj4P3dv7rF83rJ22YhZFGg7qS0"
-
-# # Base URL for PDF.co Web API requests
-# BASE_URL = "https://api.pdf.co/v1"
-
-# # HTML template
-# file_read = open("templates/report.html", mode='r', encoding='utf-8')
-# SampleHtml = file_read.read()
-# file_read.close()
-
-# # Destination PDF file name
-# DestinationFile = ".\\result.pdf"
-
-
-def generate_pdf(args=None):
-    GeneratePDFFromHtml(SampleHtml, DestinationFile)
-
-
-def GeneratePDFFromHtml(SampleHtml, destinationFile):
-    """Converts HTML to PDF using PDF.co Web API"""
-
-    # Prepare requests params as JSON
-    # See documentation: https://apidocs.pdf.co/?#1-json-pdfconvertfromhtml
-    parameters = {}
-
-    # Input HTML code to be converted. Required.
-    parameters["html"] = SampleHtml
-
-    #  Name of resulting file
-    parameters["name"] = os.path.basename(destinationFile)
-
-    # Set to css style margins like 10 px or 5px 5px 5px 5px.
-    parameters["margins"] = "0 0 0 0"
-
-    # Can be Letter, A4, A5, A6 or custom size like 200x200
-    parameters["paperSize"] = "Letter"
-
-    # Set to Portrait or Landscape. Portrait by default.
-    parameters["orientation"] = "Portrait"
-
-    # true by default. Set to false to disable printing of background.
-    parameters["printBackground"] = "true"
-
-    # If large input document, process in async mode by passing true
-    parameters["async"] = "false"
-
-    # Set to HTML for header to be applied on every page at the header.
-    parameters["header"] = ""
-
-    # Set to HTML for footer to be applied on every page at the bottom.
-    parameters["footer"] = ""
-
-    # Prepare URL for 'HTML To PDF' API request
-    url = "{}/pdf/convert/from/html".format(
-        BASE_URL
-    )
-
-    # Execute request and get response as JSON
-
-    response = requests.post(url, data=parameters, headers={"x-api-key": API_KEY})
-    if (response.status_code == 200):
-        json = response.json()
-
-        if json["error"] == False:
-            #  Get URL of result file
-            resultFileUrl = json["url"]
-            # Download result file
-            r = requests.get(resultFileUrl, stream=True)
-            if (r.status_code == 200):
-                with open(destinationFile, 'wb') as file:
-                    for chunk in r:
-                        file.write(chunk)
-                print(f"Result file saved as \"{destinationFile}\" file.")
-            else:
-                print(f"Request error: {response.status_code} {response.reason}")
-        else:
-            # Show service reported error
-            print(json["message"])
-    else:
-        print(f"Request error: {response.status_code} {response.reason}")
+@app.route('/report')
+def report():
+    print(required_image)
+    return render_template('report.html', score=disease_score,
+                           predicted_class=disease_status, image_path=required_image)
 
 
 if __name__ == '__main__':

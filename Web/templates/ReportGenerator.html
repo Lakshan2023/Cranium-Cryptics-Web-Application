@@ -79,9 +79,17 @@
                                      {% endif %}
                             </div>
                             </label>
-                            <input type="file" id="fileInput" class="upload-button" accept="image/*" onchange="previewImage();displayUpdateReportStatus();" required
+                            <input type="file" id="fileInput" class="upload-button" accept="image/*" onchange="previewImage();displayUpdateReportStatus();disableLink();" required
                             name="imagefile">
-                            <button class="scan-button">Generate Report</button>
+
+                            <div class="generate-report-tab">
+                                <button class="scan-button">Generate Report</button>
+                                {% if predicted_class %}
+                                    <a href="/report" class="report-link" id="reportLink">Check Report</a>
+                                {% else %}
+                                    <a href="#" class="report-link" id="reportLink">Check Report</a>
+                                {% endif %}
+                            </div>
                         </form>
                     </div>
                     <div class="main-left">

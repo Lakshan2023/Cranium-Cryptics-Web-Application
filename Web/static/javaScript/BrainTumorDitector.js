@@ -1,14 +1,23 @@
+// this function is used to preview the image
 function previewImage() {
+    // Get the file input element
     const fileInput = document.getElementById('fileInput');
+    // Get the image holder element
     const imageHolder = document.querySelector('.holder');
+    // Get the magnifying glass element
     const magnifyingGlass = document.querySelector('.magnifying-glass-effect');
+    // Get the span element
     const span = document.querySelector('.span-image');
 
+    // Get the file
     const file = fileInput.files[0];
 
+    // Check if a file is selected
     if (file) {
+        // Create a new FileReader
         const reader = new FileReader();
         reader.onload = function (e) {
+            // Set the src attribute of the image holder
             imageHolder.src = e.target.result;
             span.style.display = 'none';
             imageHolder.style.display = 'block'; // Make sure image holder is displayed
@@ -54,9 +63,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const fileInput = document.getElementById('fileInput');
     fileInput.addEventListener('change', previewImage);
 });
-
-
-
 
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -231,9 +237,15 @@ function handleFileInputChange() {
 document.querySelector(".scan-button").addEventListener("click", handleFileInputChange);
 
 
+function disableLink() {
+    const reportLink = document.getElementById('reportLink');
 
+    if (reportLink !== null) {
+        reportLink.href = "javascript:void(0)";
 
-
+        reportLink.onclick = null;
+    }
+}
 
 
 

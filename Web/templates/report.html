@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blood Report</title>
+  
+    <link rel="icon" type="image/x-icon" href="../static/images/logo1.png" sizes="64x64 32x32">
+    <title>Cranium Cryptics</title>
+
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@600&display=swap">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js"></script>
@@ -17,7 +20,7 @@
             --fontRoboto: 'Roboto';
             --fontPoppins: 'Poppins';
             --fontOzwald: 'Oswald';
-            --primaryColor:#789798;
+            --primaryColor: #a9cacb;
             --secondaryColor:#F2F2F0;
             --thirdColor: #636565;
             --fourthColor: #2C3333;
@@ -106,20 +109,22 @@
         }
 
         .patient-image{
-            height: 40vh;
-            width: 40vh;
+            height: 55vh;
+            width: 55vh;
             margin-bottom: 1vh;
             border-radius: 5px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-
         }
 
         /* Table Styles */
         .status table {
+            height: 55vh;
             width: 80%;
             border-collapse: collapse;
             margin: 0 auto;
             font-size: 1.1em;
+            margin-top: 2vh;
+            margin-bottom: 2vh;
         }
 
         .status th, .status td {
@@ -145,6 +150,17 @@
             margin-bottom: 3vh;
         }
 
+        .footer{
+            height: 17.3vh;
+        }
+
+        .diagnosis-info{
+            font-size: 17px;
+            color: #ffffff;
+            font-family: var(--fontPoppins);
+            text-align: center;
+        }
+
     </style>
 </head>
 <body>
@@ -155,8 +171,8 @@
             <h1 class="heading-name"><span class="cranium-name">Cranium</span> Cryptics</h1>
         </div>
         <div class="report-detail">
-            <p>Uzman Arfan</p>
-            <p>seyeduzman@gmail.com</p>
+            <p class="user-name">Uzman Arfan</p>
+            <p class="email">seyeduzman@gmail.com</p>
             <p><span id="currentDate"></span></p>
             <p><span id="currentTime"></span></p>
         </div>
@@ -165,7 +181,11 @@
     <div class="report-section">
         <div class="report-img">
             <h2 class="diagnosis-heading">Diagnosis Report</h2>
-            <img src="../static/reportGenerator/img.png" alt="Patient Image" class="patient-image">
+            {% if predicted_class %}
+                 <img src="{{ image_path }}" alt="Patient Image" class="patient-image">
+            {% else %}
+                  <img src="../static/reportGenerator/img.png" alt="Patient Image" class="patient-image">
+            {% endif %}
         </div>
     </div>
 
@@ -176,41 +196,82 @@
             <th>Detection Output</th>
             <th>Probability</th>
         </tr>
+
         <tr>
             <td>Detected Edge</td>
-            <td><span id="detectedEdge"></span></td>
-            <td><span id="detectedEdgeProbability"></span></td>
+            {% if predicted_class %}
+                <td><span id="detectedEdge">{{ predicted_class["Edge"] }}</span></td>
+                <td><span id="detectedEdgeProbability">{{ score["Edge"] }}</span></td>
+            {% else %}
+                <td><span id="detectedEdge"></span></td>
+                <td><span id="detectedEdgeProbability"></span></td>
+            {% endif %}
         </tr>
+
         <tr>
             <td>Tumour Detection status</td>
-            <td><span id="detectedTumour"></span></td>
-            <td><span id="detectedTumourProbability"></span></td>
+            {% if predicted_class %}
+                <td><span id="detectedTumour"> {{ predicted_class["Tumour"] }}</span></td>
+                <td><span id="detectedTumourProbability">{{ score["Tumour"] }}</span></td>
+            {% else %}
+                <td><span id="detectedTumour"></span></td>
+                <td><span id="detectedTumourProbability"></span></td>
+            {% endif %}
         </tr>
+
         <tr>
             <td>Detected Tumour Type</td>
-            <td><span id="detectedTumourType"></span></td>
-            <td><span id="detectedTumourTypeProbability"></span></td>
+            {% if predicted_class %}
+                <td><span id="detectedTumourType">{{ predicted_class["Tumour Type"] }}</span></td>
+                <td><span id="detectedTumourTypeProbability">{{ score["Tumour Type"] }}</span></td>
+            {% else %}
+                <td><span id="detectedTumourType"></span></td>
+                <td><span id="detectedTumourTypeProbability"></span></td>
+            {% endif %}
         </tr>
+
         <tr>
             <td>Ischemic Stroke status</td>
-            <td><span id="detectedStroke"></span></td>
-            <td><span id="detectedStrokeProbability"></span></td>
+            {% if predicted_class %}
+                <td><span id="detectedStroke">{{ predicted_class["Stroke"] }}</span></td>
+                <td><span id="detectedStrokeProbability">{{ score["Stroke"] }}</span></td>
+            {% else %}
+                <td><span id="detectedStroke"></span></td>
+                <td><span id="detectedStrokeProbability"></span></td>
+            {% endif %}
         </tr>
+
         <tr>
             <td>Alzheimer Detection Status</td>
-            <td><span id="detectedAlzheimers"></span></td>
-            <td><span id="detectedAlzheimersProbability"></span></td>
+            {% if predicted_class %}
+                <td><span id="detectedAlzheimers">{{ predicted_class["Alzheimer"] }}</span></td>
+                <td><span id="detectedAlzheimersProbability">{{ score["Alzheimer"] }}</span></td>
+            {% else %}
+                <td><span id="detectedAlzheimers"></span></td>
+                <td><span id="detectedAlzheimersProbability"></span></td>
+            {% endif %}
         </tr>
+
     </table>
 </div>
 
     <div class="footer">
-        <p>**The report is generated by the AI model and the results are not 100% accurate.
+        <p class="diagnosis-info">**The report is generated by the AI model and the results are not 100% accurate.
             Please consult a doctor for further diagnosis.**</p>
     </div>
 
 
     <script>
+    const storedData = localStorage.getItem('userData');
+    const userData = JSON.parse(storedData);
+    usersData= JSON.stringify(userData)
+
+    const userName = document.querySelector('.user-name');
+    const email = document.querySelector('.email');
+
+    userName.innerHTML = userData.userName;
+    email.innerHTML = userData.email;
+
     // Get current date and time
     const optionsDate = { year: 'numeric', month: '2-digit', day: '2-digit' };
     const optionsTime = { hour: 'numeric', minute: 'numeric', hour12: true };
@@ -221,27 +282,6 @@
     // Display date and time in the header
     document.getElementById('currentDate').textContent = currentDate;
     document.getElementById('currentTime').textContent = currentTime;
-
-    // // Making changes for the table by the model output
-    // // for detecting edge
-    // document.getElementById('detectedEdge').textContent = "{{ data['edge_data'] }}";
-    // document.getElementById('detectedEdgeProbability').textContent = "{{ data['edge_probability'] }}";
-
-    // // for detecting tumour
-    // document.getElementById('detectedTumour').textContent = "{{ data['tumour_data'] }}";
-    // document.getElementById('detectedTumourProbability').textContent = "{{ data['tumour_probability'] }}";
-    
-    // // detecting the tumor type
-    // document.getElementById('detectedTumourType').textContent = "{{ data['tumour_type_data'] }}";
-    // document.getElementById('detectedTumourTypeProbability').textContent = "{{ data['tumour_type_probability'] }}";
-
-    // // detecting stroke
-    // document.getElementById('detectedStroke').textContent = "{{ data['stroke_data'] }}";
-    // document.getElementById('detectedStrokeProbability').textContent = "{{ data['stroke_probability'] }}";
-
-    // // detecting alzehimer
-    // document.getElementById('detectedAlzheimers').textContent = "{{ data['alzheimers_data'] }}";
-    // document.getElementById('detectedAlzheimersProbability').textContent = "{{ data['alzheimers_probability'] }}";
 
     // Report saving part
     const element = document.documentElement;  
